@@ -13,6 +13,7 @@ import discord4j.voice.VoiceConnection;
 
 public class ComandoJoin implements Command{
     private  AudioProvider provider;
+    public static boolean voiceOn;
     @Override
     public void execute(MessageCreateEvent event) {
         final Member member = event.getMember().orElse(null);
@@ -21,6 +22,7 @@ public class ComandoJoin implements Command{
                 final VoiceState voiceState = member.getVoiceState().block();
                 if (voiceState != null) {
                     final VoiceChannel channel = voiceState.getChannel().block();
+                    voiceOn=true;
                     if (channel != null) {
                         // join returns a VoiceConnection which would be required if we were
                         // adding disconnection features, but for now we are just ignoring it.
@@ -31,6 +33,7 @@ public class ComandoJoin implements Command{
                     throw new Exception();
             }
         }catch (Exception e){
+            voiceOn=false;
             Bot.escribirMensaje((TextChannel) event.getMessage().getChannel().block(),"Tenes q estar adentro de un canal para hacer esto!!!!");
         }
 

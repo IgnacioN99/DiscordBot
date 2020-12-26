@@ -22,53 +22,55 @@ public class Sonido implements Command {
     @Override
     public void execute(MessageCreateEvent event) {
         new ComandoJoin().execute(event);
-        Sounds.encontrarSonidos();
-        VoiceChannel v = event.getMember().orElse(null).getVoiceState().block().getChannel().block();
-        a=event.getGuildId().get();
+        if(ComandoJoin.voiceOn) {
+            Sounds.encontrarSonidos();
+            VoiceChannel v = event.getMember().orElse(null).getVoiceState().block().getChannel().block();
+            a = event.getGuildId().get();
 
-        String sonidoAReproducir=event.getMessage().getContent();
-        String [] mensaje= event.getMessage().getContent().split(" ");
-        for (Map.Entry<String, File> entry  : Sounds.getSonidos().entrySet()) {
-                if(entry.getKey().contains(mensaje[mensaje.length-1].toLowerCase())){
-                    sonidoAReproducir=entry.getValue().getAbsolutePath();
+            String sonidoAReproducir = event.getMessage().getContent();
+            String[] mensaje = event.getMessage().getContent().split(" ");
+            for (Map.Entry<String, File> entry : Sounds.getSonidos().entrySet()) {
+                if (entry.getKey().contains(mensaje[mensaje.length - 1].toLowerCase())) {
+                    sonidoAReproducir = entry.getValue().getAbsolutePath();
                     System.out.println(sonidoAReproducir);
                     break;
-                }else {
-                    sonidoAReproducir=null;
+                } else {
+                    sonidoAReproducir = null;
                 }
-        }
-        if(sonidoAReproducir==null){
+            }
+            if (sonidoAReproducir == null) {
 
-            File[] values = Sounds.getSonidos().values().toArray(new File[0]);
-            sonidoAReproducir = values[(int) (0+Math.random()*values.length)].getAbsolutePath();
-        }
-        Bot.playerManager.loadItem(sonidoAReproducir, new AudioLoadResultHandler()  {
-            final TrackScheduler scheduler =GuildAudioManager.of(v.getGuildId()).getScheduler();
-            @Override
-            public void trackLoaded(AudioTrack audioTrack) {
+                File[] values = Sounds.getSonidos().values().toArray(new File[0]);
+                sonidoAReproducir = values[(int) (0 + Math.random() * values.length)].getAbsolutePath();
+            }
+            Bot.playerManager.loadItem(sonidoAReproducir, new AudioLoadResultHandler() {
+                final TrackScheduler scheduler = GuildAudioManager.of(v.getGuildId()).getScheduler();
+
+                @Override
+                public void trackLoaded(AudioTrack audioTrack) {
 
                     scheduler.play(audioTrack);
-                    rep=true;
+                    rep = true;
 
-            }
+                }
 
-            @Override
-            public void playlistLoaded(AudioPlaylist audioPlaylist) {
+                @Override
+                public void playlistLoaded(AudioPlaylist audioPlaylist) {
 
-            }
+                }
 
-            @Override
-            public void noMatches() {
-                Bot.escribirMensaje((TextChannel) event.getMessage().getChannel().block(),event.getMember().orElse(null).getNicknameMention()+"no tengo ese sonido pedazo de bOLUDOOOOOOOOO");
-            }
+                @Override
+                public void noMatches() {
+                    Bot.escribirMensaje((TextChannel) event.getMessage().getChannel().block(), event.getMember().orElse(null).getNicknameMention() + "no tengo ese sonido pedazo de bOLUDOOOOOOOOO");
+                }
 
-            @Override
-            public void loadFailed(FriendlyException e) {
-                e.printStackTrace();
-            }
+                @Override
+                public void loadFailed(FriendlyException e) {
+                    e.printStackTrace();
+                }
 
-        });
-
+            });
+        }
     }
 
     @Override
